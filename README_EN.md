@@ -2,7 +2,7 @@
 
 [English](README_EN.md) | [中文](README_ZH.md) | [한국어](README.md)
 
-A powerful GUI application for translating Paradox game mods. It leverages the Google Gemini API to efficiently translate YAML localization files.
+A powerful GUI application for translating Paradox game mods. It uses an OpenAI-compatible API to efficiently translate YAML localization files.
 
 ![UI Setting](asset/image%201%20-%20ui%20setting.png)
 
@@ -14,7 +14,7 @@ A powerful GUI application for translating Paradox game mods. It leverages the G
 - Supports Korean, English, and Chinese
 
 ### 🔧 Advanced Translation Features
-- **Google Gemini API Integration**: High-quality AI translation
+- **OpenAI-Compatible API Integration**: High-quality AI translation
 - **Batch Processing**: Splits large files into chunks for processing
 - **Recovery System**: Checkpoint-based recovery for interrupted translations
 - **Quality Assurance**: YAML syntax checking and translation quality verification
@@ -82,7 +82,7 @@ A powerful GUI application for translating Paradox game mods. It leverages the G
 
 ### Prerequisites
 ```bash
-pip install customtkinter google-generativeai
+pip install customtkinter requests
 ```
 
 ### How to Run
@@ -95,8 +95,9 @@ python "pdx translation tool/run_translator.py"
 ## How to Use
 
 ### 1. API Settings
-- Enter your Google Gemini API key.
-- Select the model to use (e.g., gemini-1.5-pro, gemini-1.5-flash).
+- Enter your Base URL (for example, `https://api.openai.com/v1`).
+- Enter your API key.
+- Enter the model name to use (free text).
 
 ### 2. Folder Settings
 - **Input Folder**: Select the folder containing the YAML files to be translated.
@@ -134,7 +135,7 @@ python "pdx translation tool/run_translator.py"
 ### GUI Panel Structure
 
 #### Settings Panels (`translator_app/gui/panels/`)
-- `api_model_panel.py`: API key and model selection.
+- `api_model_panel.py`: Base URL, API key, and model input.
 - `folder_panel.py`: Input/output folder selection.
 - `translation_lang_panel.py`: Source/target language settings.
 - `detailed_settings_panel.py`: Advanced translation parameters.
@@ -151,7 +152,7 @@ python "pdx translation tool/run_translator.py"
 
 1.  **File Discovery**: Scans for YAML files (.yml/.yaml) in the input folder.
 2.  **Batch Processing**: Splits large files based on a configurable threshold.
-3.  **API Translation**: Uses the Google Gemini API with custom prompts and glossaries.
+3.  **API Translation**: Uses an OpenAI-compatible `/v1/chat/completions` API with custom prompts and glossaries.
 4.  **Recovery System**: Checkpoint-based recovery for interrupted translations.
 5.  **Quality Assurance**: Built-in YAML syntax validation and translation quality checks.
 
@@ -185,7 +186,7 @@ python "pdx translation tool/run_translator.py"
 
 ### Tech Stack
 - **GUI**: CustomTkinter (for modern UI styling)
-- **API**: Google Generative AI
+- **API**: OpenAI-compatible Chat Completions API
 - **Language**: Python 3.7+
 - **Encoding**: UTF-8-BOM (for compatibility)
 

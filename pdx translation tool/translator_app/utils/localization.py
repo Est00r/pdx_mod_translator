@@ -51,10 +51,12 @@ LANGUAGES = {
 
         # 2.2. API 및 모델 설정 (API & Model Settings)
         "api_settings_frame": "API 및 모델 설정",
-        "api_key_label": "Gemini API 키:",
-        "api_key_tooltip": "Google AI Studio에서 발급받은 Gemini API 키를 입력하세요.\n예: AIzaSy...",
+        "api_key_label": "API 키:",
+        "api_key_tooltip": "사용할 OpenAI 호환 API 키를 입력하세요.",
+        "base_url_label": "Base URL:",
+        "base_url_tooltip": "OpenAI 호환 API의 Base URL을 입력하세요.\n예: https://api.openai.com/v1",
         "model_label": "번역 모델:",
-        "model_tooltip": "번역에 사용할 Gemini 모델을 선택합니다.\n모델마다 성능과 비용이 다를 수 있습니다.",
+        "model_tooltip": "번역에 사용할 모델명을 직접 입력하세요.\n모델마다 성능과 비용이 다를 수 있습니다.",
         "temperature_label": "템퍼러쳐:",
         "temperature_tooltip": "번역의 무작위성 제어 (0.0=일관적, 1.0=창의적)",
 
@@ -201,8 +203,10 @@ LANGUAGES = {
         "log_retrying_missing_lines": "누락된 {0}개 라인 재번역 시도 중... (시도 {1}/3)",
 
         # 3.2. 오류/경고 로그 (Error/Warning Logs)
-        "error_api_key_needed": "Gemini API 키를 입력해야 합니다.",
-        "error_model_needed": "번역 모델을 선택해야 합니다.",
+        "error_api_key_needed": "API 키를 입력해야 합니다.",
+        "error_base_url_needed": "Base URL을 입력해야 합니다.",
+        "error_base_url_v1_required": "Base URL은 '/v1'로 끝나야 합니다.",
+        "error_model_needed": "번역 모델을 입력해야 합니다.",
         "error_input_folder_invalid": "올바른 입력 폴더를 선택해야 합니다.",
         "error_output_folder_needed": "출력 폴더를 선택해야 합니다.",
         "error_numeric_setting_invalid": "숫자 설정값이 올바르지 않습니다. 유효한 숫자를 입력해주세요.",
@@ -434,10 +438,12 @@ LANGUAGES = {
 
         # 2.2. API & Model Settings
         "api_settings_frame": "API and Model Settings",
-        "api_key_label": "Gemini API Key:",
-        "api_key_tooltip": "Enter the Gemini API key issued from Google AI Studio.\nExample: AIzaSy...",
+        "api_key_label": "API Key:",
+        "api_key_tooltip": "Enter the API key for your OpenAI-compatible endpoint.",
+        "base_url_label": "Base URL:",
+        "base_url_tooltip": "Enter the base URL for your OpenAI-compatible API.\nExample: https://api.openai.com/v1",
         "model_label": "Translation Model:",
-        "model_tooltip": "Select the Gemini model to use for translation.\nPerformance and cost may vary by model.",
+        "model_tooltip": "Enter the model name to use for translation.\nPerformance and cost may vary by model.",
         "temperature_label": "Temperature:",
         "temperature_tooltip": "Controls randomness in translation (0.0=deterministic, 1.0=creative)",
 
@@ -586,8 +592,10 @@ LANGUAGES = {
         "log_retrying_missing_lines": "Retrying {0} missing lines... (attempt {1}/3)",
 
         # 3.2. Error/Warning Logs
-        "error_api_key_needed": "Gemini API key is required.",
-        "error_model_needed": "A translation model must be selected.",
+        "error_api_key_needed": "API key is required.",
+        "error_base_url_needed": "Base URL is required.",
+        "error_base_url_v1_required": "Base URL must end with '/v1'.",
+        "error_model_needed": "A translation model is required.",
         "error_input_folder_invalid": "A valid input folder must be selected.",
         "error_output_folder_needed": "An output folder must be selected.",
         "error_numeric_setting_invalid": "Numeric setting is invalid. Please enter a valid number.",
@@ -879,10 +887,12 @@ LANGUAGES = {
 
         # 2.2. API 及模型设置 (API & Model Settings)
         "api_settings_frame": "API 及模型设置",
-        "api_key_label": "Gemini API 密钥：",
-        "api_key_tooltip": "请输入从 Google AI Studio 获取的 Gemini API 密钥。\n例如：AIzaSy...",
+        "api_key_label": "API 密钥：",
+        "api_key_tooltip": "请输入 OpenAI 兼容接口的 API 密钥。",
+        "base_url_label": "Base URL：",
+        "base_url_tooltip": "请输入 OpenAI 兼容 API 的 Base URL。\n例如：https://api.openai.com/v1",
         "model_label": "翻译模型：",
-        "model_tooltip": "选择用于翻译的 Gemini 模型。\n不同模型的性能和成本可能有所不同。",
+        "model_tooltip": "请输入用于翻译的模型名称。\n不同模型的性能和成本可能有所不同。",
         "temperature_label": "温度:",
         "temperature_tooltip": "控制翻译的随机性（0.0=确定性，1.0=创造性）",
 
@@ -1031,8 +1041,10 @@ LANGUAGES = {
         "log_retrying_missing_lines": "正在重试 {0} 个缺失行...（第 {1}/3 次尝试）",
 
         # 3.2. 错误/警告日志 (Error/Warning Logs)
-        "error_api_key_needed": "需要输入 Gemini API 密钥。",
-        "error_model_needed": "必须选择翻译模型。",
+        "error_api_key_needed": "需要输入 API 密钥。",
+        "error_base_url_needed": "需要输入 Base URL。",
+        "error_base_url_v1_required": "Base URL 必须以 '/v1' 结尾。",
+        "error_model_needed": "必须输入翻译模型。",
         "error_input_folder_invalid": "必须选择一个有效的输入文件夹。",
         "error_output_folder_needed": "必须选择输出文件夹。",
         "error_numeric_setting_invalid": "数字设置无效。请输入一个有效的数字。",

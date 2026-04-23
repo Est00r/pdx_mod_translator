@@ -55,6 +55,7 @@ class TranslationGUI(ctk.CTk):
 
         self.appearance_mode_var = tk.StringVar(value="Dark")
         self.api_key_var = tk.StringVar()
+        self.base_url_var = tk.StringVar(value="https://api.openai.com/v1")
         self.input_folder_var = tk.StringVar()
         self.output_folder_var = tk.StringVar()
         self.model_name_var = tk.StringVar()
@@ -88,7 +89,7 @@ class TranslationGUI(ctk.CTk):
         self.consistency_window = None  # 일관성 검사기 창 참조
 
         self.api_lang_options_en = ('English', 'Korean', 'Simplified Chinese', 'French', 'German', 'Spanish', 'Japanese', 'Portuguese', 'Russian', 'Turkish')
-        self.available_models = ['gemini-2.5-pro','gemini-2.5-flash', 'gemini-2.5-flash-lite', 'gemini-2.0-flash']
+        self.available_models = ['gpt-4o-mini']
         if self.available_models:
             self.model_name_var.set(self.available_models[0])
 
@@ -234,6 +235,7 @@ Text to translate:
             "ui_lang_var": self.current_lang_code,
             "appearance_mode_var": self.appearance_mode_var,
             "api_key_var": self.api_key_var,
+            "base_url_var": self.base_url_var,
             "input_folder_var": self.input_folder_var,
             "output_folder_var": self.output_folder_var,
             "model_name_var": self.model_name_var,
@@ -264,6 +266,7 @@ Text to translate:
             "ui_lang_var": self.current_lang_code,
             "appearance_mode_var": self.appearance_mode_var,
             "api_key_var": self.api_key_var,
+            "base_url_var": self.base_url_var,
             "input_folder_var": self.input_folder_var,
             "output_folder_var": self.output_folder_var,
             "model_name_var": self.model_name_var,
@@ -669,7 +672,8 @@ Text to translate:
         # 항상 stats_callback을 설정 (main_window의 메서드로)
         success = self.translator_engine.start_translation_process(
             api_key=self.api_key_var.get().strip(),
-            selected_model_name=self.model_name_var.get(),
+            base_url=self.base_url_var.get().strip(),
+            selected_model_name=self.model_name_var.get().strip(),
             input_folder=self.input_folder_var.get(),
             output_folder=output_dir,
             source_lang_api=self.source_lang_for_api_var.get(),
@@ -708,13 +712,14 @@ Text to translate:
 
         # API 키 검증 강화
         api_key = self.api_key_var.get().strip()
+        base_url = self.base_url_var.get().strip()
         if not api_key:
             messagebox.showerror(self.texts.get("error_title"), self.texts.get("error_api_key_needed")); return False
-        
-        # API 키 형식 검증 (Gemini API 키는 'AIza'로 시작)
-        if not api_key.startswith('AIza') or len(api_key) < 30:
-            messagebox.showerror(self.texts.get("error_title"), "Invalid API key format. Gemini API keys should start with 'AIza' and be at least 30 characters long."); return False
-        if not self.model_name_var.get():
+        if not base_url:
+            messagebox.showerror(self.texts.get("error_title"), self.texts.get("error_base_url_needed")); return False
+        if not base_url.endswith('/v1'):
+            messagebox.showerror(self.texts.get("error_title"), self.texts.get("error_base_url_v1_required")); return False
+        if not self.model_name_var.get().strip():
             messagebox.showerror(self.texts.get("error_title"), self.texts.get("error_model_needed")); return False
         if not self.input_folder_var.get() or not os.path.isdir(self.input_folder_var.get()):
             messagebox.showerror(self.texts.get("error_title"), self.texts.get("error_input_folder_invalid")); return False
@@ -723,7 +728,7 @@ Text to translate:
             messagebox.showerror(self.texts.get("error_title"), self.texts.get("error_numeric_setting_invalid") + f" ({self.texts.get('batch_size_label')[:-1]})"); return False
         if not is_valid_int(self.max_workers_var, 1, 256):
             messagebox.showerror(self.texts.get("error_title"), self.texts.get("error_numeric_setting_invalid") + f" ({self.texts.get('concurrent_files_label')[:-1]})"); return False
-        if not is_valid_int(self.max_tokens_var, 100, 65536): # Gemini 모델 최대값 고려 (flash 모델은 더 높음)
+        if not is_valid_int(self.max_tokens_var, 100, 65536): # 모델별 허용 범위를 고려한 기본 검증
             messagebox.showerror(self.texts.get("error_title"), self.texts.get("error_numeric_setting_invalid") + f" ({self.texts.get('max_output_tokens_label')[:-1]})"); return False
         if not is_valid_float(self.delay_between_batches_var, 0.0, 60.0):
             messagebox.showerror(self.texts.get("error_title"), self.texts.get("error_numeric_setting_invalid") + f" ({self.texts.get('batch_delay_label')[:-1]})"); return False

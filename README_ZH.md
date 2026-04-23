@@ -2,7 +2,7 @@
 
 [English](README_EN.md) | [中文](README_ZH.md) | [한국어](README.md)
 
-一款功能强大的 GUI 应用程序，用于翻译 Paradox (P社) 游戏模组。它利用 Google Gemini API 高效地翻译 YAML 本地化文件。
+一款功能强大的 GUI 应用程序，用于翻译 Paradox (P社) 游戏模组。它使用 OpenAI 兼容 API 高效地翻译 YAML 本地化文件。
 
 ![UI 设置](asset/image%201%20-%20ui%20setting.png)
 
@@ -14,7 +14,7 @@
 - 支持韩语、英语、中文
 
 ### 🔧 高级翻译功能
-- **Google Gemini API 集成**：高质量的 AI 翻译
+- **OpenAI 兼容 API 集成**：高质量的 AI 翻译
 - **批量处理**：将大文件分割成块进行处理
 - **恢复系统**：基于检查点的中断翻译恢复
 - **质量保证**：YAML 语法检查和翻译质量验证
@@ -82,7 +82,7 @@
 
 ### 系统要求
 ```bash
-pip install customtkinter google-generativeai
+pip install customtkinter requests
 ```
 
 ### 运行方法
@@ -95,8 +95,9 @@ python "pdx translation tool/run_translator.py"
 ## 使用方法
 
 ### 1. API 设置
-- 输入您的 Google Gemini API 密钥。
-- 选择要使用的模型（例如 gemini-1.5-pro, gemini-1.5-flash）。
+- 输入 Base URL（例如 `https://api.openai.com/v1`）。
+- 输入 API 密钥。
+- 输入要使用的模型名称（自由输入）。
 
 ### 2. 文件夹设置
 - **输入文件夹**：选择包含待翻译 YAML 文件的文件夹。
@@ -134,7 +135,7 @@ python "pdx translation tool/run_translator.py"
 ### GUI 面板结构
 
 #### 设置面板 (`translator_app/gui/panels/`)
-- `api_model_panel.py`: API 密钥和模型选择。
+- `api_model_panel.py`: Base URL、API 密钥和模型输入。
 - `folder_panel.py`: 输入/输出文件夹选择。
 - `translation_lang_panel.py`: 源/目标语言设置。
 - `detailed_settings_panel.py`: 高级翻译参数。
@@ -151,7 +152,7 @@ python "pdx translation tool/run_translator.py"
 
 1.  **文件发现**：在输入文件夹中扫描 YAML 文件（.yml/.yaml）。
 2.  **批量处理**：根据可配置的阈值分割大文件。
-3.  **API 翻译**：使用带有自定义提示和术语表的 Google Gemini API。
+3.  **API 翻译**：使用支持 `/v1/chat/completions` 的 OpenAI 兼容 API，并结合自定义提示词和术语表。
 4.  **恢复系统**：基于检查点的中断翻译恢复。
 5.  **质量保证**：内置 YAML 语法验证和翻译质量检查。
 
@@ -185,7 +186,7 @@ python "pdx translation tool/run_translator.py"
 
 ### 技术栈
 - **GUI**: CustomTkinter (用于现代 UI 风格)
-- **API**: Google Generative AI
+- **API**: OpenAI 兼容 Chat Completions API
 - **语言**: Python 3.7+
 - **编码**: UTF-8-BOM (为确保兼容性)
 

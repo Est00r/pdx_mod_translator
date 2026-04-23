@@ -18,11 +18,17 @@ class APIModelPanel(ctk.CTkFrame):
         self.api_entry_widget.grid(row=1, column=1, columnspan=2, sticky="ew", padx=10, pady=5)
         self.api_entry_tooltip = Tooltip(self.api_entry_widget, "")
 
+        self.base_url_label_widget = ctk.CTkLabel(self)
+        self.base_url_label_widget.grid(row=2, column=0, sticky="w", padx=10, pady=5)
+        self.base_url_entry_widget = ctk.CTkEntry(self, textvariable=self.main_app.base_url_var, placeholder_text="https://api.openai.com/v1")
+        self.base_url_entry_widget.grid(row=2, column=1, columnspan=2, sticky="ew", padx=10, pady=5)
+        self.base_url_entry_tooltip = Tooltip(self.base_url_entry_widget, "")
+
         self.model_label_widget = ctk.CTkLabel(self)
-        self.model_label_widget.grid(row=2, column=0, sticky="w", padx=10, pady=5)
-        self.model_combo_widget = ctk.CTkComboBox(self, variable=self.main_app.model_name_var, values=self.main_app.available_models, state='readonly')
-        self.model_combo_widget.grid(row=2, column=1, columnspan=2, sticky="ew", padx=10, pady=5)
-        self.model_combo_tooltip = Tooltip(self.model_combo_widget, "")
+        self.model_label_widget.grid(row=3, column=0, sticky="w", padx=10, pady=5)
+        self.model_entry_widget = ctk.CTkEntry(self, textvariable=self.main_app.model_name_var, placeholder_text="gpt-4o-mini")
+        self.model_entry_widget.grid(row=3, column=1, columnspan=2, sticky="ew", padx=10, pady=5)
+        self.model_entry_tooltip = Tooltip(self.model_entry_widget, "")
 
         self.update_language()
 
@@ -31,5 +37,7 @@ class APIModelPanel(ctk.CTkFrame):
         self.api_model_title_label.configure(text=texts.get("api_settings_frame"))
         self.api_key_label_widget.configure(text=texts.get("api_key_label"))
         self.api_entry_tooltip.update_text(texts.get("api_key_tooltip"))
+        self.base_url_label_widget.configure(text=texts.get("base_url_label"))
+        self.base_url_entry_tooltip.update_text(texts.get("base_url_tooltip"))
         self.model_label_widget.configure(text=texts.get("model_label"))
-        self.model_combo_tooltip.update_text(texts.get("model_tooltip"))
+        self.model_entry_tooltip.update_text(texts.get("model_tooltip"))
