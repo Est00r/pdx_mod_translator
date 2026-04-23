@@ -4,11 +4,11 @@ import threading
 import time
 import codecs
 import concurrent.futures
-import google.generativeai as genai
 import re
 import tempfile
 import json
 import shutil
+import requests
 from datetime import datetime
 from functools import lru_cache
 from collections import deque
@@ -45,6 +45,9 @@ class TranslationRecovery:
             os.remove(checkpoint_file)
 
 class TranslatorEngine:
+    # Increased from 600 seconds because very large translation batches can take much longer.
+    REQUEST_TIMEOUT_SECONDS = 3000
+
     def __init__(self, log_callback, progress_callback, status_callback, stop_event, get_input_folder_callback):
         self.log_callback = log_callback
         self.main_progress_callback = progress_callback
@@ -69,6 +72,7 @@ class TranslatorEngine:
         # 설정 변수들
         self.enable_backup = False  
         self.api_key = None
+        self.base_url = "https://api.openai.com/v1"
         self.selected_model_name = None
         self.source_lang_for_api = None
         self.target_lang_for_api = None
@@ -267,23 +271,11 @@ class TranslatorEngine:
     def _initialize_model(self):
         """모델 초기화 with 강화된 에러 처리"""
         try:
-            # API 키 설정 (타임아웃 추가)
-            genai.configure(api_key=self.api_key)
-
-            # 모델 이름에 'models/' 접두사가 없으면 추가
-            model_name = self.selected_model_name
-            if not model_name.startswith('models/'):
-                model_name = f'models/{model_name}'
-
-            self.model = genai.GenerativeModel(model_name)
-            
             # API 연결 테스트
-            test_response = self.model.generate_content(
-                "test", 
-                generation_config=genai.types.GenerationConfig(
-                    max_output_tokens=1,
-                    temperature=0.1
-                )
+            self._request_chat_completion(
+                final_prompt="test",
+                temperature=0.1,
+                max_tokens=1
             )
             
             self.log_callback("log_model_start", self.selected_model_name)
@@ -307,6 +299,62 @@ class TranslatorEngine:
                 self.log_callback("log_api_model_init_fail", str(e))
             
             return False
+
+    def _build_chat_completion_url(self):
+        normalized_base_url = self.base_url.rstrip('/')
+        if normalized_base_url.endswith('/chat/completions'):
+            return normalized_base_url
+        if normalized_base_url.endswith('/v1'):
+            return f"{normalized_base_url}/chat/completions"
+        return f"{normalized_base_url}/v1/chat/completions"
+
+    def _request_chat_completion(self, final_prompt, temperature, max_tokens):
+        url = self._build_chat_completion_url()
+        payload = {
+            "model": self.selected_model_name,
+            "messages": [{"role": "user", "content": final_prompt}],
+            "temperature": temperature,
+            "max_tokens": max_tokens
+        }
+        headers = {
+            "Authorization": f"Bearer {self.api_key}",
+            "Content-Type": "application/json"
+        }
+
+        try:
+            response = requests.post(url, headers=headers, json=payload, timeout=self.REQUEST_TIMEOUT_SECONDS)
+        except requests.Timeout as e:
+            raise RuntimeError(f"Request timeout: {e}") from e
+        except requests.exceptions.SSLError as e:
+            raise RuntimeError(f"SSL verification error: {e}") from e
+        except requests.ConnectionError as e:
+            raise RuntimeError(f"Connection error: {e}") from e
+        except requests.RequestException as e:
+            raise RuntimeError(f"Network request failed: {e}") from e
+
+        if response.status_code >= 400:
+            try:
+                error_body = response.json()
+                error_message = error_body.get("error", {}).get("message")
+            except (json.JSONDecodeError, ValueError):
+                error_body = response.text
+                error_message = None
+            if not error_message:
+                error_message = error_body
+            raise RuntimeError(f"HTTP {response.status_code}: {error_message}")
+
+        response_data = response.json()
+        choices = response_data.get("choices", [])
+        if not choices:
+            raise RuntimeError("Empty response: choices not found")
+
+        message = choices[0].get("message", {})
+        translated_text = message.get("content", "")
+
+        if not isinstance(translated_text, str):
+            raise RuntimeError("Invalid response format: message.content is not text")
+
+        return translated_text
 
     def _extract_yml_value(self, line_content):
         """YML 라인에서 값 부분만 추출 (최적화된 정규식 사용)"""
@@ -970,50 +1018,11 @@ class TranslatorEngine:
                     return text_batch
 
                 # API 호출
-                response = self.model.generate_content(
-                    final_prompt,
-                    generation_config=genai.types.GenerationConfig(
-                        temperature=temperature,
-                        max_output_tokens=self.max_tokens,
-                        top_k=40,
-                        top_p=0.95
-                    )
+                translated_text = self._request_chat_completion(
+                    final_prompt=final_prompt,
+                    temperature=temperature,
+                    max_tokens=self.max_tokens
                 )
-                
-                translated_text = ""
-                finish_reason_val = 0
-                candidate = None
-
-                if response.candidates:
-                    candidate = response.candidates[0]
-                    if candidate.content and candidate.content.parts:
-                        translated_text = "".join(part.text for part in candidate.content.parts if hasattr(part, 'text'))
-                    if hasattr(candidate, 'finish_reason'):
-                        finish_reason_val = candidate.finish_reason
-                elif hasattr(response, 'text') and response.text: 
-                    translated_text = response.text
-
-                if response.prompt_feedback and response.prompt_feedback.block_reason:
-                    self.log_callback("log_batch_prompt_blocked", self._get_current_file_for_log(), 
-                                response.prompt_feedback.block_reason)
-                    return text_batch
-
-                # 응답 처리
-                if finish_reason_val not in [0, 1]:
-                    if finish_reason_val == 2:  # 토큰 한계
-                        self.log_callback("log_batch_token_limit", self._get_current_file_for_log(), 
-                                    finish_reason_val)
-                        if len(text_batch) > 1:
-                            mid = len(text_batch) // 2
-                            first_half = self._translate_batch_core(text_batch[:mid], temperature)
-                            if self.stop_event.is_set(): 
-                                return text_batch
-                            second_half = self._translate_batch_core(text_batch[mid:], temperature)
-                            return first_half + second_half
-                        else:
-                            return text_batch
-                    else:
-                        return text_batch
 
                 if not translated_text.strip():
                     self.log_callback("log_batch_empty_response", self._get_current_file_for_log())
@@ -1716,7 +1725,7 @@ class TranslatorEngine:
                 self.main_status_callback("status_completed_some", completed_count, total_files_to_process, task_type=task_type)
             self._set_current_file_for_log("")
 
-    def start_translation_process(self, api_key, selected_model_name,
+    def start_translation_process(self, api_key, base_url, selected_model_name,
                                 input_folder, output_folder,
                                 source_lang_api, target_lang_api,
                                 prompt_template, glossary_content,
@@ -1738,6 +1747,7 @@ class TranslatorEngine:
 
         self.stop_event.clear()
         self.api_key = api_key
+        self.base_url = base_url
         self.selected_model_name = selected_model_name
         self.source_lang_for_api = source_lang_api
         self.target_lang_for_api = target_lang_api

@@ -24,6 +24,7 @@ class SettingsManager:
                 app_vars["ui_lang_var"].set(config.get("ui_language", "ko"))
                 app_vars["appearance_mode_var"].set(config.get("appearance_mode", "Dark"))
                 app_vars["api_key_var"].set(config.get("api_key", ""))
+                app_vars["base_url_var"].set(config.get("base_url", "https://api.openai.com/v1"))
                 app_vars["input_folder_var"].set(config.get("input_folder", ""))
                 app_vars["output_folder_var"].set(config.get("output_folder", ""))
                 app_vars["model_name_var"].set(config.get("model_name", self.default_model))
@@ -62,6 +63,7 @@ class SettingsManager:
             "ui_language": app_vars["ui_lang_var"].get(),
             "appearance_mode": current_appearance_mode,
             "api_key": app_vars["api_key_var"].get(),
+            "base_url": app_vars["base_url_var"].get(),
             "input_folder": app_vars["input_folder_var"].get(),
             "output_folder": app_vars["output_folder_var"].get(),
             "model_name": app_vars["model_name_var"].get(),
