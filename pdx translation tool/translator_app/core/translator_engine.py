@@ -45,7 +45,7 @@ class TranslationRecovery:
             os.remove(checkpoint_file)
 
 class TranslatorEngine:
-    REQUEST_TIMEOUT_SECONDS = 180
+    REQUEST_TIMEOUT_SECONDS = 600
 
     def __init__(self, log_callback, progress_callback, status_callback, stop_event, get_input_folder_callback):
         self.log_callback = log_callback
