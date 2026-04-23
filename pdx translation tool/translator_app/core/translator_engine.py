@@ -322,6 +322,8 @@ class TranslatorEngine:
             response = requests.post(url, headers=headers, json=payload, timeout=120)
         except requests.Timeout as e:
             raise RuntimeError(f"Request timeout: {e}") from e
+        except requests.exceptions.SSLError as e:
+            raise RuntimeError(f"SSL verification error: {e}") from e
         except requests.ConnectionError as e:
             raise RuntimeError(f"Connection error: {e}") from e
         except requests.RequestException as e:
