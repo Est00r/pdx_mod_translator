@@ -45,8 +45,8 @@ class TranslationRecovery:
             os.remove(checkpoint_file)
 
 class TranslatorEngine:
-    # Large translation batches can legitimately take several minutes to complete.
-    REQUEST_TIMEOUT_SECONDS = 600
+    # Very large translation batches can legitimately take a long time to complete.
+    REQUEST_TIMEOUT_SECONDS = 3000
 
     def __init__(self, log_callback, progress_callback, status_callback, stop_event, get_input_folder_callback):
         self.log_callback = log_callback
