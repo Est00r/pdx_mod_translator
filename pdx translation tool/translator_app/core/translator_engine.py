@@ -318,7 +318,10 @@ class TranslatorEngine:
             "Content-Type": "application/json"
         }
 
-        response = requests.post(url, headers=headers, json=payload, timeout=120)
+        try:
+            response = requests.post(url, headers=headers, json=payload, timeout=120)
+        except requests.RequestException as e:
+            raise RuntimeError(f"Network error: {e}") from e
 
         if response.status_code >= 400:
             try:

@@ -89,9 +89,8 @@ class TranslationGUI(ctk.CTk):
         self.consistency_window = None  # 일관성 검사기 창 참조
 
         self.api_lang_options_en = ('English', 'Korean', 'Simplified Chinese', 'French', 'German', 'Spanish', 'Japanese', 'Portuguese', 'Russian', 'Turkish')
-        self.available_models = ['gpt-4o-mini']
-        if self.available_models:
-            self.model_name_var.set(self.available_models[0])
+        default_model_name = 'gpt-4o-mini'
+        self.model_name_var.set(default_model_name)
 
         self.default_prompt_template_str = """Please translate the following YML formatted text from '{source_lang_for_prompt}' to '{target_lang_for_prompt}'.
 {glossary_section}
@@ -114,7 +113,7 @@ Text to translate:
         # --- 2. SettingsManager 초기화 (load_settings 전에 필요) ---
         self.settings_manager = SettingsManager(
             default_prompt_template=self.default_prompt_template_str,
-            default_available_models=self.available_models
+            default_available_models=[default_model_name]
         )
 
         # --- 3. 설정 로드 및 기본 UI 설정 ---
