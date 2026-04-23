@@ -45,6 +45,8 @@ class TranslationRecovery:
             os.remove(checkpoint_file)
 
 class TranslatorEngine:
+    REQUEST_TIMEOUT_SECONDS = 120
+
     def __init__(self, log_callback, progress_callback, status_callback, stop_event, get_input_folder_callback):
         self.log_callback = log_callback
         self.main_progress_callback = progress_callback
@@ -319,7 +321,7 @@ class TranslatorEngine:
         }
 
         try:
-            response = requests.post(url, headers=headers, json=payload, timeout=120)
+            response = requests.post(url, headers=headers, json=payload, timeout=self.REQUEST_TIMEOUT_SECONDS)
         except requests.Timeout as e:
             raise RuntimeError(f"Request timeout: {e}") from e
         except requests.exceptions.SSLError as e:
@@ -333,7 +335,7 @@ class TranslatorEngine:
             try:
                 error_body = response.json()
                 error_message = error_body.get("error", {}).get("message")
-            except Exception:
+            except (json.JSONDecodeError, ValueError):
                 error_body = response.text
                 error_message = None
             if not error_message:
