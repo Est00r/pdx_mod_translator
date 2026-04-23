@@ -320,15 +320,23 @@ class TranslatorEngine:
 
         try:
             response = requests.post(url, headers=headers, json=payload, timeout=120)
+        except requests.Timeout as e:
+            raise RuntimeError(f"Request timeout: {e}") from e
+        except requests.ConnectionError as e:
+            raise RuntimeError(f"Connection error: {e}") from e
         except requests.RequestException as e:
-            raise RuntimeError(f"Network error: {e}") from e
+            raise RuntimeError(f"Network request failed: {e}") from e
 
         if response.status_code >= 400:
             try:
                 error_body = response.json()
+                error_message = error_body.get("error", {}).get("message")
             except Exception:
                 error_body = response.text
-            raise RuntimeError(f"HTTP {response.status_code}: {error_body}")
+                error_message = None
+            if not error_message:
+                error_message = error_body
+            raise RuntimeError(f"HTTP {response.status_code}: {error_message}")
 
         response_data = response.json()
         choices = response_data.get("choices", [])
