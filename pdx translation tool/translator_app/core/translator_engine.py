@@ -346,11 +346,6 @@ class TranslatorEngine:
         message = choices[0].get("message", {})
         translated_text = message.get("content", "")
 
-        if isinstance(translated_text, list):
-            translated_text = "".join(
-                part.get("text", "") for part in translated_text if isinstance(part, dict)
-            )
-
         if not isinstance(translated_text, str):
             raise RuntimeError("Invalid response format: message.content is not text")
 
