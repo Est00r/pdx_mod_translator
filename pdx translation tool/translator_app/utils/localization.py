@@ -205,7 +205,6 @@ LANGUAGES = {
         # 3.2. 오류/경고 로그 (Error/Warning Logs)
         "error_api_key_needed": "API 키를 입력해야 합니다.",
         "error_base_url_needed": "Base URL을 입력해야 합니다.",
-        "error_base_url_v1_required": "Base URL은 '/v1'로 끝나야 합니다.",
         "error_model_needed": "번역 모델을 입력해야 합니다.",
         "error_input_folder_invalid": "올바른 입력 폴더를 선택해야 합니다.",
         "error_output_folder_needed": "출력 폴더를 선택해야 합니다.",
@@ -594,7 +593,6 @@ LANGUAGES = {
         # 3.2. Error/Warning Logs
         "error_api_key_needed": "API key is required.",
         "error_base_url_needed": "Base URL is required.",
-        "error_base_url_v1_required": "Base URL must end with '/v1'.",
         "error_model_needed": "A translation model is required.",
         "error_input_folder_invalid": "A valid input folder must be selected.",
         "error_output_folder_needed": "An output folder must be selected.",
@@ -1043,7 +1041,6 @@ LANGUAGES = {
         # 3.2. 错误/警告日志 (Error/Warning Logs)
         "error_api_key_needed": "需要输入 API 密钥。",
         "error_base_url_needed": "需要输入 Base URL。",
-        "error_base_url_v1_required": "Base URL 必须以 '/v1' 结尾。",
         "error_model_needed": "必须输入翻译模型。",
         "error_input_folder_invalid": "必须选择一个有效的输入文件夹。",
         "error_output_folder_needed": "必须选择输出文件夹。",

@@ -716,8 +716,6 @@ Text to translate:
             messagebox.showerror(self.texts.get("error_title"), self.texts.get("error_api_key_needed")); return False
         if not base_url:
             messagebox.showerror(self.texts.get("error_title"), self.texts.get("error_base_url_needed")); return False
-        if not base_url.endswith('/v1'):
-            messagebox.showwarning(self.texts.get("warn_title"), self.texts.get("error_base_url_v1_required"))
         if not self.model_name_var.get().strip():
             messagebox.showerror(self.texts.get("error_title"), self.texts.get("error_model_needed")); return False
         if not self.input_folder_var.get() or not os.path.isdir(self.input_folder_var.get()):
